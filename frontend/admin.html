@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Degree Attestation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        /* Applications Table */
+        .applications-section {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .applications-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #e2e8f0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #f59e0b; color: #000; }
+        .status-approved { background: #22c55e; color: #000; }
+        .status-rejected { background: #ef4444; color: #fff; }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 3px;
+        }
+
+        .btn-approve {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-view {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .close-modal {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* Verification Log */
+        .verification-log {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .log-entry {
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            th, td { padding: 8px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">👑 Admin Dashboard | Degree Attestation System</div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="container">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalApps">0</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingApps">0</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="approvedApps">0</div>
+                <div class="stat-label">Degrees Issued</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalPayments">0</div>
+                <div class="stat-label">Payments Received</div>
+            </div>
+        </div>
+
+        <div class="applications-section">
+            <h2 class="section-title">📋 Pending Applications</h2>
+            <div class="applications-table">
+                <table id="applicationsTable">
+                    <thead>
+                        <tr><th>Student Name</th><th>CNIC</th><th>Program Applied</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="applicationsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="applications-section">
+            <h2 class="section-title">✅ Processed Applications</h2>
+            <div class="applications-table">
+                <table id="processedTable">
+                    <thead><tr><th>Student Name</th><th>CNIC</th><th>Degree Program</th><th>Status</th><th>Degree Hash</th></tr></thead>
+                    <tbody id="processedBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="verification-log">
+            <h2 class="section-title">📜 Verification Log</h2>
+            <div id="verificationLog"></div>
+        </div>
+    </div>
+
+    <!-- Modal for application review -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <h3>Review Application</h3>
+            <div id="modalStudentInfo"></div>
+            <label>Select Degree Program:</label>
+            <select id="programSelect">
+                <option value="BS Computer Science">BS Computer Science</option>
+                <option value="BS Software Engineering">BS Software Engineering</option>
+                <option value="BS Cybersecurity">BS Cybersecurity</option>
+                <option value="BS Artificial Intelligence">BS Artificial Intelligence</option>
+                <option value="BS Data Science">BS Data Science</option>
+            </select>
+            <label>Admin Comments:</label>
+            <textarea id="adminComments" rows="3" placeholder="Add any comments..."></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-approve" onclick="approveApplication()">✅ Approve & Issue Degree</button>
+                <button class="btn btn-reject" onclick="rejectApplication()">❌ Reject Application</button>
+                <button class="close-modal" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        let currentApplication = null;
+
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                document.getElementById('totalApps').innerText = data.totalApplications || 0;
+                document.getElementById('pendingApps').innerText = data.pendingApplications || 0;
+                document.getElementById('approvedApps').innerText = data.approvedApplications || 0;
+                document.getElementById('totalPayments').innerText = data.totalPayments || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadApplications() {
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/pending-applications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const tbody = document.getElementById('applicationsBody');
+                tbody.innerHTML = '';
+                
+                if (data.applications && data.applications.length > 0) {
+                    data.applications.forEach(app => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).innerText = app.name || 'N/A';
+                        row.insertCell(1).innerText = app.cnic || 'N/A';
+                        row.insertCell(2).innerText = app.program || 'Not selected';
+                        row.insertCell(3).innerHTML = `<span class="status-badge status-pending">${app.status}</span>`;
+                        row.insertCell(4).innerHTML = `
+                            <button class="btn btn-view" onclick="viewApplication('${app.email}')">Review</button>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No pending applications</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+            }
+        }
+
+        function viewApplication(email) {
+            currentApplication = email;
+            const modal = document.getElementById('reviewModal');
+            modal.style.display = 'flex';
+        }
+
+        async function approveApplication() {
+            const program = document.getElementById('programSelect').value;
+            const comments = document.getElementById('adminComments').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/verify-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        email: currentApplication,
+                        approved: true,
+                        program: program,
+                        comments: comments
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`✅ Degree issued successfully!\nDegree Hash: ${data.degreeHash}`);
+                    closeModal();
+                    loadApplications();
+                    loadStats();
+                } else {
+                    alert(data.error || 'Failed to issue degree');
+                }
+            } catch (error) {
+                alert('Error approving application');
+            }
+        }
+
+        async function rejectApplication() {
+            const comments = document.getElementById('adminComments').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/admin/verify-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        email: currentApplication,
+                        approved: false,
+                        program: '',
+                        comments: comments
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Application rejected');
+                    closeModal();
+                    loadApplications();
+                    loadStats();
+                }
+            } catch (error) {
+                alert('Error rejecting application');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            currentApplication = null;
+            document.getElementById('adminComments').value = '';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        loadStats();
+        loadApplications();
+    </script>
+</body>
+</html>
