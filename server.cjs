@@ -21,8 +21,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ VERCEL FIX: /tmp use karo kyunki Vercel ka filesystem read-only hai
+const IS_VERCEL = !!process.env.VERCEL;
+const UPLOAD_DIR = IS_VERCEL ? '/tmp/uploads' : 'uploads';
+
 // Create required directories
-const dirs = ['uploads', 'public'];
+const dirs = [UPLOAD_DIR, IS_VERCEL ? '/tmp/public' : 'public'];
 dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -31,12 +35,12 @@ dirs.forEach(dir => {
 
 // Serve static files from frontend
 app.use(express.static(path.join(__dirname, 'frontend')));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // Multer storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, UPLOAD_DIR);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -729,6 +733,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ BLOCKDEGREE BACKEND SERVER`);
     console.log(`✅ ========================================`);
     console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`✅ Upload directory: ${UPLOAD_DIR}`);
     console.log(`✅ ========================================`);
     console.log(`\n📋 VALIDATION RULES (ALL THREE REQUIRED):`);
     console.log(`   🪪 1. CNIC: Must be valid (not expired)`);
