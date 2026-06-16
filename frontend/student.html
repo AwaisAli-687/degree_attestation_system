@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Degree Attestation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .welcome-card h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 10px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #4ade80;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+
+        .step-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+        }
+
+        .step.active {
+            background: #4ade80;
+            color: #1a1a2e;
+        }
+
+        .step.completed {
+            background: #22c55e;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #dcfce7; color: #16a34a; }
+        .status-rejected { background: #fee2e2; color: #dc2626; }
+
+        .degree-card {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 1rem auto;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🎓 Degree Attestation System</div>
+        <div class="user-info">
+            <span id="userName">Student</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-card">
+            <h1>Welcome, <span id="studentName">Student</span>!</h1>
+            <p>Complete your profile to get your blockchain-verified degree</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="step-container" id="stepContainer"></div>
+        </div>
+
+        <!-- Step 1: Personal Information -->
+        <div id="step1" class="section">
+            <h2 class="section-title">📋 Personal Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Father's Name</label>
+                    <input type="text" id="fatherName" placeholder="Enter father's name">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CNIC (Format: 12345-1234567-1)</label>
+                    <input type="text" id="cnic" placeholder="12345-1234567-1">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <select id="dobDay">
+                        <option value="">Day</option>
+                        <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                    </select>
+                    <select id="dobMonth" style="width:32%">
+                        <option value="">Month</option>
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                    </select>
+                    <select id="dobYear" style="width:32%">
+                        <option value="">Year</option>
+                        <script>for(let i=2008;i>=1970;i--) document.write(`<option value="${i}">${i}</option>`);</script>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveProfile()">Save & Continue →</button>
+        </div>
+
+        <!-- Step 2: Document Upload -->
+        <div id="step2" class="section" style="display:none">
+            <h2 class="section-title">📎 Upload Documents</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CNIC Front</label>
+                    <div class="file-upload" onclick="document.getElementById('cnicFront').click()">
+                        📄 Click to upload CNIC Front
+                        <input type="file" id="cnicFront" accept="image/*" style="display:none">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>CNIC Back</label>
+                    <div class="file-upload" onclick="document.getElementById('cnicBack').click()">
+                        📄 Click to upload CNIC Back
+                        <input type="file" id="cnicBack" accept="image/*" style="display:none">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Matric Marksheet</label>
+                    <div class="file-upload" onclick="document.getElementById('matricMarksheet').click()">
+                        📊 Click to upload Matric Marksheet
+                        <input type="file" id="matricMarksheet" accept="image/*" style="display:none">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Intermediate Marksheet</label>
+                    <div class="file-upload" onclick="document.getElementById('interMarksheet').click()">
+                        📊 Click to upload Intermediate Marksheet
+                        <input type="file" id="interMarksheet" accept="image/*" style="display:none">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="uploadDocuments()">Upload & Continue →</button>
+        </div>
+
+        <!-- Step 3: AI Verification -->
+        <div id="step3" class="section" style="display:none">
+            <h2 class="section-title">🤖 AI Verification</h2>
+            <div id="aiResult"></div>
+            <button class="btn btn-primary" onclick="startAIVerification()">Start AI Verification</button>
+        </div>
+
+        <!-- Step 4: Payment -->
+        <div id="step4" class="section" style="display:none">
+            <h2 class="section-title">💰 Payment</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="crypto">Cryptocurrency (ETH) - ₿</option>
+                        <option value="easypaisa">EasyPaisa / JazzCash - ₨</option>
+                        <option value="bank">Bank Transfer - ₨</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="createPayment()">Proceed to Payment →</button>
+            <div id="paymentInfo" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Step 5: Degree Status -->
+        <div id="step5" class="section" style="display:none">
+            <h2 class="section-title">🎓 Your Degree Status</h2>
+            <div id="degreeStatus"></div>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        let currentStep = 1;
+        let userData = null;
+
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+
+        // Load user data
+        async function loadDashboard() {
+            try {
+                const response = await fetch('http://localhost:5000/api/student/dashboard', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                userData = data;
+                updateSteps();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        function updateSteps() {
+            const steps = ['Personal Info', 'Documents', 'AI Verify', 'Payment', 'Degree'];
+            const container = document.getElementById('stepContainer');
+            container.innerHTML = steps.map((step, i) => 
+                `<div class="step ${i+1 <= currentStep ? 'active' : ''}">${step}</div>`
+            ).join('');
+            
+            const progress = ((currentStep - 1) / 4) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        async function saveProfile() {
+            const fullName = document.getElementById('fullName').value;
+            const fatherName = document.getElementById('fatherName').value;
+            const cnic = document.getElementById('cnic').value;
+            const day = document.getElementById('dobDay').value;
+            const month = document.getElementById('dobMonth').value;
+            const year = document.getElementById('dobYear').value;
+            
+            if (!fullName || !fatherName || !cnic || !day || !month || !year) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            const dateOfBirth = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/save-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name: fullName, fatherName, cnic, dateOfBirth })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    currentStep = 2;
+                    updateSteps();
+                    document.getElementById('step1').style.display = 'none';
+                    document.getElementById('step2').style.display = 'block';
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('Error saving profile');
+            }
+        }
+
+        async function uploadDocuments() {
+            const formData = new FormData();
+            const files = ['cnicFront', 'cnicBack', 'matricMarksheet', 'interMarksheet'];
+            
+            for (let fileId of files) {
+                const file = document.getElementById(fileId).files[0];
+                if (file) formData.append(fileId, file);
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/upload-documents', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    if (data.cnicExpiry && !data.cnicValid) {
+                        alert(`Warning: CNIC expired on ${data.cnicExpiry}. Please renew your CNIC.`);
+                    }
+                    currentStep = 3;
+                    updateSteps();
+                    document.getElementById('step2').style.display = 'none';
+                    document.getElementById('step3').style.display = 'block';
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('Error uploading documents');
+            }
+        }
+
+        async function startAIVerification() {
+            document.getElementById('aiResult').innerHTML = '<p>🤖 AI is verifying your documents...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/ai-verify', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const verification = data.verification;
+                    let html = `<div class="status-badge ${verification.isValid ? 'status-approved' : 'status-pending'}">
+                        ${verification.isValid ? '✅ Verified' : '⚠️ Needs Review'}
+                    </div>`;
+                    html += `<div style="margin-top:1rem"><strong>AI Analysis:</strong><br>${verification.recommendation || 'Documents verified successfully'}</div>`;
+                    document.getElementById('aiResult').innerHTML = html;
+                    
+                    if (verification.isValid) {
+                        currentStep = 4;
+                        updateSteps();
+                        document.getElementById('step3').style.display = 'none';
+                        document.getElementById('step4').style.display = 'block';
+                    } else {
+                        alert('Documents need review. Admin will contact you.');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('aiResult').innerHTML = '<p class="error">AI verification failed</p>';
+            }
+        }
+
+        async function createPayment() {
+            const method = document.getElementById('paymentMethod').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ method, amount: 0.05 })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    let paymentHtml = '';
+                    if (method === 'crypto') {
+                        paymentHtml = `
+                            <div style="margin-top:1rem; padding:1rem; background:#f0fdf4; border-radius:10px">
+                                <p><strong>💎 Crypto Payment Details:</strong></p>
+                                <p>Payment Hash: <code>${data.paymentHash}</code></p>
+                                <p>Send <strong>${data.amount}</strong> to:</p>
+                                <p><code style="background:#1a1a2e; color:#4ade80; padding:8px; display:block; border-radius:8px">${data.cryptoAddress}</code></p>
+                                <div class="file-upload" onclick="document.getElementById('paymentScreenshot').click()">
+                                    📸 Upload Transaction Screenshot
+                                    <input type="file" id="paymentScreenshot" accept="image/*" style="display:none" onchange="uploadPaymentProof('${data.paymentId}')">
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        paymentHtml = `
+                            <div style="margin-top:1rem; padding:1rem; background:#e0e7ff; border-radius:10px">
+                                <p>🔗 Click to pay via 1Link: <a href="${data.paymentUrl}" target="_blank">${data.paymentUrl}</a></p>
+                                <p>After payment, upload screenshot below:</p>
+                                <div class="file-upload" onclick="document.getElementById('paymentScreenshot').click()">
+                                    📸 Upload Payment Screenshot
+                                    <input type="file" id="paymentScreenshot" accept="image/*" style="display:none" onchange="uploadPaymentProof('${data.paymentId}')">
+                                </div>
+                            </div>
+                        `;
+                    }
+                    document.getElementById('paymentInfo').innerHTML = paymentHtml;
+                }
+            } catch (error) {
+                alert('Payment creation failed');
+            }
+        }
+
+        async function uploadPaymentProof(paymentId) {
+            const file = document.getElementById('paymentScreenshot').files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('screenshot', file);
+            formData.append('paymentId', paymentId);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/upload-payment-proof', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Payment proof submitted! Admin will verify.');
+                    currentStep = 5;
+                    updateSteps();
+                    document.getElementById('step4').style.display = 'none';
+                    document.getElementById('step5').style.display = 'block';
+                    checkDegreeStatus();
+                }
+            } catch (error) {
+                alert('Upload failed');
+            }
+        }
+
+        async function checkDegreeStatus() {
+            try {
+                const response = await fetch('http://localhost:5000/api/student/dashboard', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                let html = '';
+                if (data.degreeHash) {
+                    html = `
+                        <div class="degree-card">
+                            <p>✅ Your degree has been issued on blockchain!</p>
+                            <p><strong>Program:</strong> ${data.program}</p>
+                            <p><strong>Degree Hash:</strong> <code>${data.degreeHash}</code></p>
+                            <div class="qr-code" id="qrCode"></div>
+                            <button class="btn btn-success" onclick="downloadDegree()">📄 Download PDF Degree</button>
+                        </div>
+                    `;
+                } else if (data.applicationStatus === 'pending_admin_review') {
+                    html = '<div class="status-badge status-pending">⏳ Application under review by admin</div>';
+                } else {
+                    html = '<div class="status-badge status-pending">🔄 Processing your application</div>';
+                }
+                
+                document.getElementById('degreeStatus').innerHTML = html;
+            } catch (error) {
+                console.error('Error checking degree status:', error);
+            }
+        }
+
+        function downloadDegree() {
+            // Redirect to download endpoint
+            window.location.href = 'http://localhost:5000/api/download-degree/' + userData?.degreeHash;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        loadDashboard();
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        document.getElementById('studentName').innerText = user.email?.split('@')[0] || 'Student';
+    </script>
+</body>
+</html>
