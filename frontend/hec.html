@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEC Blockchain Degree Attestation - Pakistan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a2a3a 0%, #1a4a6a 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .hec-header {
+            background: #0d6b3e;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hec-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hec-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .hec-logo-text h1 {
+            color: white;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .hec-logo-text p {
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+        }
+
+        .hec-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .hec-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Container */
+        .hec-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            color: #1a3e6f;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #0d6b3e;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #1a3e6f;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Verification Box */
+        .verification-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .verification-box h2 {
+            color: #1a3e6f;
+            margin-bottom: 1rem;
+        }
+
+        .verification-input {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 1rem auto;
+            flex-wrap: wrap;
+        }
+
+        .verification-input input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .verification-input input:focus {
+            border-color: #0d6b3e;
+        }
+
+        .verification-input button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #0d6b3e, #0a5a35);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .verification-input button:hover {
+            transform: scale(1.02);
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result-box.valid {
+            display: block;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 2px solid #28a745;
+        }
+
+        .result-box.invalid {
+            display: block;
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .result-details {
+            text-align: left;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .result-details p {
+            margin: 8px 0;
+        }
+
+        /* Footer */
+        .hec-footer {
+            background: #0a2a3a;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .verification-input {
+                flex-direction: column;
+            }
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hec-header">
+        <div class="hec-logo">
+            <div class="hec-logo-icon">🎓</div>
+            <div class="hec-logo-text">
+                <h1>Higher Education Commission of Pakistan</h1>
+                <p>HEC Blockchain Degree Attestation System</p>
+            </div>
+        </div>
+        <div class="hec-nav">
+            <a href="#">Home</a>
+            <a href="#">About HEC</a>
+            <a href="#">Contact</a>
+            <a href="/">Student Portal →</a>
+        </div>
+    </div>
+
+    <div class="hec-container">
+        <div class="hero">
+            <h1>Public Degree Verification Portal</h1>
+            <p>Instantly verify the authenticity of any HEC-registered degree — no login required.</p>
+            <div class="hero-badge">⚡ Powered by Blockchain Technology</div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Tamper-Proof Records</div>
+                <div class="feature-desc">Degrees stored on blockchain cannot be altered or forged</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Instant Results</div>
+                <div class="feature-desc">Verify any degree within seconds</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">QR Code Support</div>
+                <div class="feature-desc">Scan QR code from degree certificate</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">Fraud Detection</div>
+                <div class="feature-desc">AI-powered fraud detection system</div>
+            </div>
+        </div>
+
+        <div class="verification-box">
+            <h2>🔍 Verify Degree Certificate</h2>
+            <p>Enter the Degree Blockchain Hash or Degree ID</p>
+            <div class="verification-input">
+                <input type="text" id="degreeId" placeholder="HEC-2024-UOL-0001 or 0x7d1d7f11...">
+                <button onclick="verifyDegree()">Verify</button>
+            </div>
+            <div id="result" class="result-box"></div>
+        </div>
+    </div>
+
+    <div class="hec-footer">
+        <p>© 2024 Higher Education Commission of Pakistan. All rights reserved.</p>
+        <p style="font-size: 12px; margin-top: 10px;">Blockchain Based Degree Attestation System | Powered by Ethereum + Hyperledger</p>
+    </div>
+
+    <script>
+        async function verifyDegree() {
+            const degreeId = document.getElementById('degreeId').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!degreeId) {
+                alert('Please enter a Degree ID or Blockchain Hash');
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div style="text-align:center">⏳ Verifying on Blockchain...</div>';
+            resultDiv.className = 'result-box';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/hec/verify-degree', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ degreeId: degreeId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.verified) {
+                    resultDiv.innerHTML = `
+                        <div class="result-title">✅ DEGREE VERIFIED - AUTHENTIC</div>
+                        <div style="font-size: 14px;">This degree has been verified on the blockchain.</div>
+                        <div class="result-details">
+                            <p><strong>🎓 Student Name:</strong> ${data.studentName}</p>
+                            <p><strong>👨 Father's Name:</strong> ${data.fatherName || 'N/A'}</p>
+                            <p><strong>🪪 CNIC:</strong> ${data.cnic || 'N/A'}</p>
+                            <p><strong>📜 Degree:</strong> ${data.degreeType}</p>
+                            <p><strong>🏛 University:</strong> ${data.university}</p>
+                            <p><strong>📅 Issue Date:</strong> ${data.issueDate}</p>
+                            <p><strong>🔗 Blockchain Hash:</strong> <code style="font-size: 11px; word-break: break-all;">${degreeId}</code></p>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(40,167,69,0.2); border-radius: 8px;">
+                            ✅ This is a VALID degree issued by Iqra University and attested by HEC
+                        </div>
+                    `;
+                    resultDiv.className = 'result-box valid';
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result-title">❌ DEGREE NOT FOUND - INVALID</div>
+                        <div style="font-size: 14px;">${data.message || 'No record found on blockchain.'}</div>
+                        <div class="result-details">
+                            <p><strong>⚠️ Alert:</strong> This degree may be fake or not issued by any HEC-recognized university.</p>
+                            <p><strong>📞 Contact HEC:</strong> 051-111-111-432</p>
+                            <p><strong>📧 Email:</strong> fraud@hec.gov.pk</p>
+                        </div>
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(220,53,69,0.2); border-radius: 8px;">
+                            ❌ This degree is NOT verified on the blockchain. Please report if suspicious.
+                        </div>
+                    `;
+                    resultDiv.className = 'result-box invalid';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result-title">⚠️ Verification Error</div>
+                    <div style="font-size: 14px;">Could not connect to blockchain network. Please try again later.</div>
+                    <div style="margin-top: 10px; font-size: 12px;">Error: ${error.message}</div>
+                `;
+                resultDiv.className = 'result-box invalid';
+            }
+        }
+        
+        // Allow Enter key press
+        document.getElementById('degreeId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyDegree();
+            }
+        });
+    </script>
+</body>
+</html>
