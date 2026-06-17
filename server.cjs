@@ -55,12 +55,15 @@ let transporter = null;
 if (process.env.EMAIL_USER && process.env.EMAIL_PASS && 
     process.env.EMAIL_USER !== 'your_email@gmail.com') {
     transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    family: 4,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 } else {
     console.log('📧 Email not configured. OTP will be shown on console only.');
 }
